@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "chromacolorpicker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/joncardasis/ChromaColorPicker",
+      "state" : {
+        "branch" : "master",
+        "revision" : "4fa7a0b3cb779d97b771a5bf0de8927d6a37153f"
+      }
+    }
+  ],
+  "version" : 2
+}
