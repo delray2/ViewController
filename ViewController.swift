@@ -7,14 +7,7 @@ import Foundation
 import FoundationNetworking
 #endif
 
-class ViewController: UIViewController, UIPopoverPresentationControllerDelegate, CentralViewControllerDelegate, ColorViewControllerDelegate, RoomCaptureViewControllerDelegate {
-    
-    func setupScene(_ scene: SCNScene) {
-        print("setupScene method called")
-        self.scene = scene
-        sceneView?.scene = scene
-    }
-
+class ViewController: UIViewController, UIPopoverPresentationControllerDelegate, CentralViewControllerDelegate, ColorViewControllerDelegate, {
     
     
     func didChangeColor(_ color: UIColor) {
@@ -27,6 +20,7 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
     var containerView = UIView()
     var isContainerViewVisible = true
     var sceneView: SCNView!
+    var scene: SCNScene!
     var cameraNode: SCNNode!
     var lights:SCNLight!
     var houseNode:SCNNode!
@@ -53,13 +47,13 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
     var hue: CGFloat = 1.0
     var colorr = UIColor()
     var joystick: Joystick!
-   
-        var scene: SCNScene?
     var isJoystickActive: Bool = false
     var showMenu: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        scene = SCNScene(named: "art.scnassets/myhouse.scn")
+        sceneView.scene = scene
        
         
         cyllinder = sceneView?.scene?.rootNode.childNode(withName: "cyllinder", recursively: true)
