@@ -7,13 +7,23 @@ import Foundation
 import FoundationNetworking
 #endif
 
-class ViewController: UIViewController, UIPopoverPresentationControllerDelegate, CentralViewControllerDelegate, ColorViewControllerDelegate {
+class ViewController: UIViewController, UIPopoverPresentationControllerDelegate, CentralViewControllerDelegate, ColorViewControllerDelegate, RoomCaptureViewControllerDelegate {
+    
+    func setupScene(_ scene: SCNScene) {
+        print("setupScene method called")
+        self.scene = scene
+        sceneView?.scene = scene
+    }
+
+    
+    
     func didChangeColor(_ color: UIColor) {
         light1.color = color
     }
     
     
     
+    var delegate: RoomCaptureViewControllerDelegate?
     var containerView = UIView()
     var isContainerViewVisible = true
     var sceneView: SCNView!
@@ -38,30 +48,31 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
     var light1:SCNLight!
     var light2:SCNLight!
     var light3:SCNLight!
-    var menu:SCNNode!
-    var start:SCNNode!
-  
+    
+   
     var hue: CGFloat = 1.0
     var colorr = UIColor()
     var joystick: Joystick!
-    var scene: SCNScene!
+   
+        var scene: SCNScene?
     var isJoystickActive: Bool = false
     var showMenu: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+       
+        
         cyllinder = sceneView?.scene?.rootNode.childNode(withName: "cyllinder", recursively: true)
         lightNode = cyllinder?.childNode(withName: "light1", recursively: true)
         light1 = lightNode?.light
 
         sceneView = SCNView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
         containerView = SCNView(frame: CGRect(x: 0, y: sceneView.frame.size.height, width: view.bounds.width, height: 290))
-                                
-        sceneView.autoenablesDefaultLighting = true
-        sceneView.allowsCameraControl = true
+        
+        sceneView?.autoenablesDefaultLighting = true
+        sceneView?.allowsCameraControl = true
         view.addSubview(sceneView)
-        scene = SCNScene(named: "Export5/Room.usdz")
-        sceneView.scene = scene
-        cameraNode = scene.rootNode.childNode(withName: "camera", recursively: true)
+        cameraNode = scene?.rootNode.childNode(withName: "camera", recursively: true)
         upButton.backgroundColor = .blue
         upButton.setTitle("↑", for: .normal)
         upButton.addTarget(self, action: #selector(moveCameraUp), for: .touchUpInside)
@@ -84,10 +95,8 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
         rightButton.addTarget(self, action: #selector(moveCameraRight), for: .touchUpInside)
         showMenu = UIButton(type: .system)
         containerView.addSubview(rightButton)
-        sceneView.addSubview(showMenu)
+        sceneView?.addSubview(showMenu)
         containerView.frame = CGRect(x: 0, y: view.bounds.height, width: view.bounds.width, height: 290)
-        
-        let showMenuY = sceneView.frame.size.height - 70
         showMenu.frame = CGRect(x: view.bounds.width - 150, y: sceneView.frame.size.height - 70, width: 75, height: 35)
         showMenu.addTarget(self, action: #selector(onClickMenu), for: .touchUpInside)
         showMenu.backgroundColor = .blue
@@ -96,6 +105,8 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
         setupJoystick()
     }
     
+    
+  
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         
@@ -179,7 +190,7 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
     
     
     func setupNodes() {
-        
+        guard let sceneView = sceneView else { return }
         cyllinder = sceneView.scene?.rootNode.childNode(withName: "cyllinder1", recursively: true)
         cyllinder2 = sceneView.scene?.rootNode.childNode(withName: "cyllinder2", recursively: true)
         cyllinder3 = sceneView.scene?.rootNode.childNode(withName: "cyllinder3", recursively: true)
