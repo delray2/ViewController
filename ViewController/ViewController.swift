@@ -1,20 +1,14 @@
 import UIKit
 import SceneKit
+import ARKit
 import SpriteKit
 import AVFoundation
 import Foundation
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif
-
-class ViewController: UIViewController, UIPopoverPresentationControllerDelegate, CentralViewControllerDelegate, ColorViewControllerDelegate, RoomCaptureViewControllerDelegate {
-    
-    func setupScene(_ scene: SCNScene) {
-        print("setupScene method called")
-        self.scene = scene
-        sceneView?.scene = scene
-    }
-
+import QuickLook
+class ViewController: UIViewController, UIPopoverPresentationControllerDelegate, CentralViewControllerDelegate, ColorViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDragDelegate, UIDropInteractionDelegate, QLPreviewControllerDataSource {
     
     
     func didChangeColor(_ color: UIColor) {
@@ -23,10 +17,13 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
     
     
     
-    var delegate: RoomCaptureViewControllerDelegate?
+    @IBOutlet weak var collectionView: UICollectionView!
+    
+    var models: [URL?] = []
     var containerView = UIView()
     var isContainerViewVisible = true
     var sceneView: SCNView!
+    var scene: SCNScene!
     var cameraNode: SCNNode!
     var lights:SCNLight!
     var houseNode:SCNNode!
@@ -48,65 +45,222 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
     var light1:SCNLight!
     var light2:SCNLight!
     var light3:SCNLight!
+    let cellIdentifier = "ModelCellIdentifier"
     
-   
     var hue: CGFloat = 1.0
     var colorr = UIColor()
     var joystick: Joystick!
-   
-        var scene: SCNScene?
     var isJoystickActive: Bool = false
     var showMenu: UIButton!
+    var showToolKit: UIButton!
+    var url: URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
         
-        cyllinder = sceneView?.scene?.rootNode.childNode(withName: "cyllinder", recursively: true)
-        lightNode = cyllinder?.childNode(withName: "light1", recursively: true)
-        light1 = lightNode?.light
-
-        sceneView = SCNView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
-        containerView = SCNView(frame: CGRect(x: 0, y: sceneView.frame.size.height, width: view.bounds.width, height: 290))
         
-        sceneView?.autoenablesDefaultLighting = true
-        sceneView?.allowsCameraControl = true
-        view.addSubview(sceneView)
-        cameraNode = scene?.rootNode.childNode(withName: "camera", recursively: true)
-        upButton.backgroundColor = .blue
-        upButton.setTitle("↑", for: .normal)
-        upButton.addTarget(self, action: #selector(moveCameraUp), for: .touchUpInside)
-        containerView.addSubview(upButton)
-        downButton.backgroundColor = .blue
-        downButton.setTitle("↓", for: .normal)
-        downButton.addTarget(self, action: #selector(moveCameraDown), for: .touchUpInside)
-        containerView.addSubview(downButton)
         
-        leftButton.backgroundColor = .blue
-        leftButton.setTitle("←", for: .normal)
-        leftButton.addTarget(self, action: #selector(moveCameraLeft), for: .touchUpInside)
-        containerView.addSubview(leftButton)
-        upButton.frame = CGRect(x: 161, y: 55, width: 83, height: 33)
-        downButton.frame = CGRect(x: 161, y: 206, width: 83, height: 33)
-        leftButton.frame = CGRect(x: 86, y: 107, width: 50, height: 80)
-        rightButton.frame = CGRect(x: 278, y: 107, width: 50, height: 80)
-        rightButton.backgroundColor = .blue
-        rightButton.setTitle("→", for: .normal)
-        rightButton.addTarget(self, action: #selector(moveCameraRight), for: .touchUpInside)
-        showMenu = UIButton(type: .system)
-        containerView.addSubview(rightButton)
-        sceneView?.addSubview(showMenu)
-        containerView.frame = CGRect(x: 0, y: view.bounds.height, width: view.bounds.width, height: 290)
-        showMenu.frame = CGRect(x: view.bounds.width - 150, y: sceneView.frame.size.height - 70, width: 75, height: 35)
-        showMenu.addTarget(self, action: #selector(onClickMenu), for: .touchUpInside)
-        showMenu.backgroundColor = .blue
-        setupNodes()
+        
+        
         setupVideo()
         setupJoystick()
+        setupScene()
+        collectionView.register(ModelCell.self, forCellWithReuseIdentifier: "Cell")
+        
+        if let Modelurl = Bundle.main.url(forResource: "models", withExtension: nil) {
+            do {
+                let fileURLs = try FileManager.default.contentsOfDirectory(at: Modelurl, includingPropertiesForKeys: nil)
+                models = fileURLs.filter { $0.pathExtension == "scn" }
+            } catch {
+                print("Failed to load USDZ files: \(error)")
+            }
+            
+        }
+        let screenSize = UIScreen.main.bounds.size
+       sceneView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.height - 300)
+       collectionView.frame = CGRect(x: 43 , y: screenSize.height - 290, width: 325, height: 216)
+    collectionView.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.5330038265)
+        view.addSubview(collectionView)
+        
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.dragDelegate = self
+        
+        
+        // Set up the SceneKit view
+        
+    }
+    
+    // MARK: - UICollectionViewDataSource
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        // Dequeue the cell using the correct identifier and cast it to ModelCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? ModelCell else {
+            fatalError("Unable to dequeue ModelCell.")
+        }
+        
+        let model = models[indexPath.row]
+        
+        
+        
+        guard let modelURL = model else { return cell }
+        
+        let modelEntity = try! SCNScene(url: modelURL, options: nil)
+        
+        cell.sceneView.scene = modelEntity
+        
+        
+        
+        return cell
     }
     
     
-  
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return models.count
+    }
+    
+    
+    // MARK: - UICollectionViewDragDelegate
+    
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let itemProvider = NSItemProvider(object: models[indexPath.row]! as NSURL)
+        
+        let dragItem = UIDragItem(itemProvider: itemProvider)
+        return [dragItem]
+    }
+    
+    // MARK: - UIDropInteractionDelegate
+    
+    func dropInteraction(_ interaction: UIDropInteraction, canHandle session: UIDropSession) -> Bool {
+        return session.canLoadObjects(ofClass: NSURL.self)
+    }
+    func dropInteraction(_ interaction: UIDropInteraction, sessionDidUpdate session: UIDropSession) -> UIDropProposal {
+        return UIDropProposal(operation: .copy)
+    }
+    
+    func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
+        session.loadObjects(ofClass: NSURL.self) { items in
+            guard let url = items.first as? URL else { return }
+            
+            // Handle the dropped URL (e.g., load the scene from the URL)
+            do {
+                let scen = try SCNScene(url: url, options: nil)
+                let node = scen.rootNode.childNode(withName: "root", recursively: true)
+                // Add the scene to your scene view
+                self.sceneView?.scene?.rootNode.addChildNode(node!)
+            } catch {
+                print("Failed to load SCNScene: \(error)")
+            }
+        }
+    
+
+        
+        
+    }
+    func setupScene() {
+        let destinationFolderURL = FileManager.default.temporaryDirectory.appendingPathComponent("Export")
+                url = destinationFolderURL.appendingPathComponent("Room.usdz")
+                
+        if let url = url {
+            do {
+                
+                let scene = try SCNScene(url: url, options: nil)
+                sceneView = SCNView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+                sceneView?.scene = scene
+                sceneView?.scene?.background.contents = UIColor.black
+                sceneView?.addInteraction(UIDropInteraction(delegate: self))
+                view.addSubview(sceneView)
+                
+            } catch {
+                print("Failed to load SCNScene: \(error)")
+            }
+            
+            let cylinder = SCNCylinder(radius: 1.0, height: 2.0)
+            
+            // Create a node with the cylinder as its geometry
+            cyllinder = SCNNode(geometry: cylinder)
+            
+            // Position the node in the scene
+            cyllinder.position = SCNVector3(x: 0, y: 0, z: 0)
+            
+            // Add the node to the scene
+            scene?.rootNode.addChildNode(cyllinder)
+            cyllinder.name = "cyllinder"
+            light1 = SCNLight()
+            light1.type = .spot // Set the type of the light
+
+            // Configure the light
+            light1.color = UIColor.white // Set the color of the light
+            light1.spotInnerAngle = 0
+            light1.spotOuterAngle = 0// Set the intensity of the light
+
+            // Create a node
+            light1Node = SCNNode()
+
+            // Add the light to the node
+            light1Node.light = light1
+
+            // Position the node in the scene
+            light1Node.position = SCNVector3(x: 0, y: 10, z: 10)
+
+            // Add the node to the scene
+            cyllinder.addChildNode(light1Node)
+           
+            
+            sceneView?.autoenablesDefaultLighting = true
+            sceneView?.allowsCameraControl = true
+         
+            cameraNode = SCNNode()
+            let camera = SCNCamera()
+            cameraNode.camera = camera
+            let root = sceneView.scene?.rootNode
+            root?.addChildNode(cameraNode)
+            upButton.backgroundColor = .blue
+            upButton.setTitle("↑", for: .normal)
+            upButton.addTarget(self, action: #selector(moveCameraUp), for: .touchUpInside)
+            containerView.addSubview(upButton)
+            downButton.backgroundColor = .blue
+            downButton.setTitle("↓", for: .normal)
+            downButton.addTarget(self, action: #selector(moveCameraDown), for: .touchUpInside)
+            containerView.addSubview(downButton)
+            
+            leftButton.backgroundColor = .blue
+            leftButton.setTitle("←", for: .normal)
+            leftButton.addTarget(self, action: #selector(moveCameraLeft), for: .touchUpInside)
+            containerView.addSubview(leftButton)
+            upButton.frame = CGRect(x: 161, y: 55, width: 83, height: 33)
+            downButton.frame = CGRect(x: 161, y: 206, width: 83, height: 33)
+            leftButton.frame = CGRect(x: 86, y: 107, width: 50, height: 80)
+            rightButton.frame = CGRect(x: 278, y: 107, width: 50, height: 80)
+            rightButton.backgroundColor = .blue
+            rightButton.setTitle("→", for: .normal)
+            rightButton.addTarget(self, action: #selector(moveCameraRight), for: .touchUpInside)
+            showMenu = UIButton(type: .system)
+            showToolKit = UIButton(type: .system)
+            containerView.addSubview(rightButton)
+            
+            containerView.frame = CGRect(x: 0, y: view.bounds.height, width: view.bounds.width, height: 290)
+            showMenu.frame = CGRect(x: view.bounds.width - 150, y: sceneView.frame.size.height - 70, width: 75, height: 35)
+            showMenu.addTarget(self, action: #selector(onClickMenu), for: .touchUpInside)
+            showMenu.backgroundColor = .blue
+            showToolKit.frame = CGRect(x: view.bounds.width - 150, y: sceneView.frame.size.height - 50, width: 75, height: 35)
+            showToolKit.addTarget(self, action: #selector(onClickToolKit), for: .touchUpInside)
+            showToolKit.backgroundColor = .black
+            sceneView?.addSubview(showToolKit)
+            sceneView?.addSubview(showMenu)
+            sceneView?.addSubview(collectionView)
+
+        }
+                    
+    }
+    
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+            return url != nil ? 1 : 0
+        }
+        
+        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+            return url! as QLPreviewItem
+        }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         
@@ -120,12 +274,11 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
         }
         //Handle Event Here e.g. PerformSegue
         print(nodeName + "was clicked")
-        if nodeName == "cyllinder" {
+        if nodeName == "Wall0" {
             
-            cyllinder = sceneView.scene?.rootNode.childNode(withName: "cyllinder", recursively: true)
-            
-            lightNode = cyllinder.childNode(withName: "light1", recursively: true)
-            light1 = lightNode.light
+            cyllinder = sceneView.scene?.rootNode.childNode(withName: "Wall0", recursively: true)
+            cyllinder.addChildNode(light1Node)
+            light1 = light1Node.light
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             guard let centralVC = storyboard.instantiateViewController(withIdentifier: "CentralViewController") as? CentralViewController else {
                 return
@@ -206,7 +359,7 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
         func setupVideo() {
             
             // A SpriteKit scene to contain the SpriteKit video node
-            let spriteKitScene = SKScene(size: CGSize(width: sceneView.frame.width, height: sceneView.frame.height))
+            let spriteKitScene = SKScene(size: CGSize(width: view.bounds.width, height: view.bounds.height))
             spriteKitScene.scaleMode = .aspectFit
             
             // Create a video player, which will be responsible for the playback of the video material
@@ -444,11 +597,55 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
         }, completion: nil)
     }
     
-    
-    @objc func moveCameraDown() {
-        cameraNode = sceneView.scene?.rootNode.childNode(withName: "camera", recursively: true)
+    @objc func onClickToolKit(_ sender: Any) {
+         sceneView.allowsCameraControl = false
+         
+        
+         let window = self.view.window
+        
+         window?.addSubview(collectionView)
+         
+         let screenSize = UIScreen.main.bounds.size
+        self.sceneView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.height - 300)
+        self.collectionView.frame = CGRect(x: 43 , y: screenSize.height - 290, width: 325, height: 216)
+         collectionView.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.5330038265)
+         
+        self.view.addSubview(collectionView)
+        
+        
+         
+         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onClickTransparent1View))
+        self.view.addGestureRecognizer(tapGesture)
+         
+     
+         
+         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: .curveEaseInOut, animations: {
+           
+             self.collectionView.frame = CGRect(x: 43 , y: screenSize.height - 290, width: 325, height: 216)
+             self.sceneView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.height - 300)
+             self.showToolKit.frame = CGRect(x: screenSize.width - 150, y: screenSize.height - 360, width: 75, height: 35)
+         }, completion: nil)
+         
+     }
+     
+     @objc func onClickTransparent1View() {
+         sceneView.allowsCameraControl = true
+         
+         
+         let screenSize = UIScreen.main.bounds.size
+
+         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.0, initialSpringVelocity: 1.0, options: .curveEaseInOut, animations: {
+             self.transparentView.alpha = 0
+             self.collectionView.frame = CGRect(x: 43 , y: screenSize.height + 290, width: 325, height: 216)
+             self.sceneView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.height)
+             self.showToolKit.frame = CGRect(x: screenSize.width - 150, y: screenSize.height - 90, width: 75, height: 35)
+         }, completion: nil)
+     }
+     
+         @objc func moveCameraDown() {
+        
         let moveCamDown = SCNAction.move(by: SCNVector3(x: 0, y: -1, z: 0), duration: 1.0)
-        cameraNode.runAction(moveCamDown)
+        cameraNode?.runAction(moveCamDown)
     }
     
     @objc func moveCameraUp() {
@@ -465,3 +662,4 @@ class ViewController: UIViewController, UIPopoverPresentationControllerDelegate,
         cameraNode.runAction(moveCamRight)
     }
 }
+

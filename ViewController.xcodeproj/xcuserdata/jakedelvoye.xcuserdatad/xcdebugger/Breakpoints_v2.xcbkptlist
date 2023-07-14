@@ -3,4 +3,54 @@
    uuid = "6B8E76CD-05E9-4338-B055-19A12743A82E"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A24344AB-8B97-4389-8805-8D6221900E05"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ViewController/OnboardingViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "14"
+            endingLineNumber = "14"
+            landmarkName = "startScan(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "A24344AB-8B97-4389-8805-8D6221900E05 - bd85dd03106f14d3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ViewController.OnboardingViewController.startScan(__C.UIButton) -&gt; ()"
+                  moduleName = "ViewController"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jakedelvoye/iCloudDriveArchive/Desktop/DesktopArchive/goit/jgk/site/ViewController/ViewController/OnboardingViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "14"
+                  endingLineNumber = "14"
+                  offsetFromSymbolStart = "52">
+               </Location>
+               <Location
+                  uuid = "A24344AB-8B97-4389-8805-8D6221900E05 - bd85dd03106f14d3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ViewController.OnboardingViewController.startScan(__C.UIButton) -&gt; ()"
+                  moduleName = "ViewController"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jakedelvoye/iCloudDriveArchive/Desktop/DesktopArchive/goit/jgk/site/ViewController/ViewController/OnboardingViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "14"
+                  endingLineNumber = "14"
+                  offsetFromSymbolStart = "260">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

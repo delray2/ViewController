@@ -14,11 +14,13 @@ import SwiftUI
 
 protocol CentralViewControllerDelegate: AnyObject {
     func didChangeColor(_ color: UIColor)
+    func close()
 }
 
 class CentralViewController: UIViewController {
     weak var delegate: CentralViewControllerDelegate?
     
+    @IBOutlet weak var close: UIButton!
     
     var colorPicker: ChromaColorPicker?
     @IBOutlet var brightnessSlider: UISlider!
@@ -271,7 +273,7 @@ extension CentralViewController: ChromaColorPickerDelegate {
             
             // Create a UIColor using the extracted RGB values
             let color = UIColor(red: red, green: green, blue: blue, alpha: 1.0)
-            let myColor = color.toRGB()
+           
             
             
             // Pass the color variable to the delegate or use it as needed

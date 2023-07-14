@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6C3E16582A5D544C00435870 /* Export5 in Resources */ = {isa = PBXBuildFile; fileRef = 6C3E16572A5D544B00435870 /* Export5 */; };
 		6C3E165A2A5D56C400435870 /* CentralViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CAE1AAA2A45B05500D59B52 /* CentralViewController.swift */; };
 		6C3E165B2A5D57AE00435870 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C81E36D2A4C242E00906E9F /* File.swift */; };
+		6C7B2FA12A5F7F2C005FDC9E /* models in Resources */ = {isa = PBXBuildFile; fileRef = 6C7B2FA02A5F7F2C005FDC9E /* models */; };
+		6C7B2FA32A5FE2C4005FDC9E /* CellClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C7B2FA22A5FE2C4005FDC9E /* CellClass.swift */; };
 		6C8113DB2A5DA823005BA411 /* RoomScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8113DA2A5DA823005BA411 /* RoomScanView.swift */; };
 		6C8113DD2A5DB895005BA411 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8113DC2A5DB895005BA411 /* OnboardingViewController.swift */; };
 		6C8113DF2A5DBEA4005BA411 /* UnsupportedDevice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C8113DE2A5DBEA4005BA411 /* UnsupportedDevice.storyboard */; };
@@ -27,7 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		6C3E16572A5D544B00435870 /* Export5 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Export5; sourceTree = "<group>"; };
+		6C7B2FA02A5F7F2C005FDC9E /* models */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; name = models; path = ViewController/models; sourceTree = SOURCE_ROOT; };
+		6C7B2FA22A5FE2C4005FDC9E /* CellClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellClass.swift; sourceTree = "<group>"; };
 		6C8113DA2A5DA823005BA411 /* RoomScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomScanView.swift; sourceTree = "<group>"; };
 		6C8113DC2A5DB895005BA411 /* OnboardingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		6C8113DE2A5DBEA4005BA411 /* UnsupportedDevice.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = UnsupportedDevice.storyboard; sourceTree = "<group>"; };
@@ -60,6 +62,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6C7B2F9F2A5F7EFF005FDC9E /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		6CC1F8EE2A451B88000D49D9 = {
 			isa = PBXGroup;
 			children = (
@@ -81,7 +90,9 @@
 				6CC1F8FA2A451B88000D49D9 /* AppDelegate.swift */,
 				6CC1F8FC2A451B88000D49D9 /* SceneDelegate.swift */,
 				6CC1F8FE2A451B88000D49D9 /* ViewController.swift */,
-				6C3E16572A5D544B00435870 /* Export5 */,
+				6C7B2FA22A5FE2C4005FDC9E /* CellClass.swift */,
+				6C7B2FA02A5F7F2C005FDC9E /* models */,
+				6C7B2F9F2A5F7EFF005FDC9E /* New Group */,
 				6CC1F90E2A45207B000D49D9 /* art.scnassets */,
 				6CAE1AAA2A45B05500D59B52 /* CentralViewController.swift */,
 				6C81E36D2A4C242E00906E9F /* File.swift */,
@@ -157,12 +168,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C3E16582A5D544C00435870 /* Export5 in Resources */,
 				6C8113DF2A5DBEA4005BA411 /* UnsupportedDevice.storyboard in Resources */,
 				6CAE1AB92A45C4D100D59B52 /* home.mov in Resources */,
 				6CC1F9042A451B89000D49D9 /* Assets.xcassets in Resources */,
 				6C8113E32A5DBEE4005BA411 /* Configuration in Resources */,
 				6CAE1AB72A45C4A200D59B52 /* MyScene.sks in Resources */,
+				6C7B2FA12A5F7F2C005FDC9E /* models in Resources */,
 				6CAE1AB32A45BC0A00D59B52 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,6 +185,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C7B2FA32A5FE2C4005FDC9E /* CellClass.swift in Sources */,
 				6CAE1AAF2A45B22300D59B52 /* TransferService.swift in Sources */,
 				6CAE1AB52A45C20000D59B52 /* Joystick.swift in Sources */,
 				6C8113DB2A5DA823005BA411 /* RoomScanView.swift in Sources */,
