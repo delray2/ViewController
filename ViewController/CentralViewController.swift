@@ -14,7 +14,7 @@ import SwiftUI
 
 protocol CentralViewControllerDelegate: AnyObject {
     func didChangeColor(_ color: UIColor)
-    func close()
+   
 }
 
 class CentralViewController: UIViewController {
@@ -61,6 +61,12 @@ class CentralViewController: UIViewController {
      
 
         
+    }
+    @IBAction func closeButtonTapped(_ sender: Any) {
+        dismissPopover()
+    }
+    func dismissPopover() {
+        self.dismiss(animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {

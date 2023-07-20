@@ -15,13 +15,15 @@ class RoomCaptureViewController: UIViewController, RoomCaptureViewDelegate, Room
     @IBOutlet var doneButton: UIBarButtonItem?
     @IBOutlet var cancelButton: UIBarButtonItem?
     @IBOutlet var activityIndicator: UIActivityIndicatorView?
-    
+    var capturedRoomURL: URL?
+    var destinationURL: URL?
+    var destinationFolderURL: URL?
     private var isScanning: Bool = false
     
     private var roomCaptureView: RoomCaptureView!
     private var roomCaptureSessionConfig: RoomCaptureSession.Configuration = RoomCaptureSession.Configuration()
     
-    private var finalResults: CapturedRoom?
+    var finalResults: CapturedRoom?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -89,15 +91,15 @@ class RoomCaptureViewController: UIViewController, RoomCaptureViewDelegate, Room
     // Alternatively, `.mesh` exports a nonparametric file and `.all`
     // exports both in a single USDZ.
     @IBAction func exportResults(_ sender: UIButton) {
-        let destinationFolderURL = FileManager.default.temporaryDirectory.appendingPathComponent("Export")
-        let destinationURL = destinationFolderURL.appendingPathComponent("Room.usdz")
-        let capturedRoomURL = destinationFolderURL.appendingPathComponent("Room.json")
+        destinationFolderURL = FileManager.default.temporaryDirectory.appendingPathComponent("Export")
+        destinationURL = destinationFolderURL?.appendingPathComponent("Room.usdz")
+        capturedRoomURL = destinationFolderURL?.appendingPathComponent("Room.json")
         do {
-            try FileManager.default.createDirectory(at: destinationFolderURL, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: destinationFolderURL!, withIntermediateDirectories: true)
             let jsonEncoder = JSONEncoder()
             let jsonData = try jsonEncoder.encode(finalResults)
-            try jsonData.write(to: capturedRoomURL)
-            try finalResults?.export(to: destinationURL, exportOptions: .parametric)
+            try jsonData.write(to: capturedRoomURL!)
+            try finalResults?.export(to: destinationURL!, exportOptions: .parametric)
             
             // Removed the code that presents the UIActivityViewController
         } catch {
@@ -130,7 +132,7 @@ class RoomCaptureViewController: UIViewController, RoomCaptureViewDelegate, Room
            }
            func transitionToNextViewController() {
                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-               let viewController = storyboard.instantiateViewController(withIdentifier: "ViewController") as! ViewController
+               let viewController = storyboard.instantiateViewController(withIdentifier: "RoomEditViewController") as! RoomEditViewController
                self.navigationController?.pushViewController(viewController, animated: true)
            }
     
